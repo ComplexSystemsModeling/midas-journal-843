@@ -16,6 +16,36 @@ extern "C"
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
+// Orientation test wrapper for ITK PointType
+//
+template< typename PointType >
+bool
+OrientationTest( 
+  const PointType& Point1,
+  const PointType& Point2,
+  const PointType& PointToTest
+  )
+  {
+  double * pa = new double[2];
+  double * pb = new double[2];
+  double * pc = new double[2];
+  double * pd = new double[2]; 
+  
+  pa[0] = TrianglePoint1[0];
+  pa[1] = TrianglePoint1[1];
+  pb[0] = TrianglePoint2[0];
+  pb[1] = TrianglePoint2[1];
+  pc[0] = TrianglePoint3[0];
+  pc[1] = TrianglePoint3[1];
+  pd[0] = PointToTest[0];
+  pd[1] = PointToTest[1];
+  
+  double orientation = orient2d( pa, pb, pc );
+  
+  return (orientation>=0?1:0);
+  }
+
+//------------------------------------------------------------------------------
 // The test functor to map skewchuck code to ITK's API
 //
 template< typename PointType >
