@@ -25,7 +25,7 @@ OrientationTest(
   const PointType& Point2,
   const PointType& PointToTest
   )
-{
+  {
   double * pa = new double[2];
   double * pb = new double[2];
   double * pd = new double[2]; 
@@ -40,7 +40,7 @@ OrientationTest(
   double orientation = orient2d( pa, pb, pd );
   
   return orientation;
-}
+  }
 //------------------------------------------------------------------------------
 
 
