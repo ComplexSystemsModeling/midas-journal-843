@@ -1,3 +1,7 @@
+#ifndef __itkPointInCircleGeometricalPredicateFunctor_h__
+#define __itkPointInCircleGeometricalPredicateFunctor_h__
+
+
 #include <itkMatrix.h>
 #include <itkTriangleCell.h>
 #include <itkCellInterface.h>
@@ -14,6 +18,35 @@ extern "C"
   double orient2d(double* pa, double* pb, double* pc);
   }
 //------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// Orientation test wrapper for ITK PointType
+//
+template< typename PointType >
+double
+OrientationTest( 
+  const PointType& Point1,
+  const PointType& Point2,
+  const PointType& PointToTest
+  )
+{
+  double * pa = new double[2];
+  double * pb = new double[2];
+  double * pd = new double[2]; 
+  
+  pa[0] = Point1[0];
+  pa[1] = Point1[1];
+  pb[0] = Point2[0];
+  pb[1] = Point2[1];
+  pd[0] = PointToTest[0];
+  pd[1] = PointToTest[1];
+  
+  double orientation = orient2d( pa, pb, pd );
+  
+  return orientation;
+}
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 // The test functor to map skewchuck code to ITK's API
@@ -47,10 +80,11 @@ IsInside(
   double det = incircle( pa, pb, pc, pd ) * orientation;
   
   // NOTE ALEX: replace by debug macro
-  std::cout << "Det(M): " << det << std::endl;
+  //std::cout << "orientation: "<< orientation << std::endl;
+  //std::cout << "Det(M): " << det << std::endl;
  
   // NOTE ALEX: zero, which means the point is ON the circle is considered IN.
-  return( det>=0?0:1 );
+  return( det<0?0:1 );
 }
 //------------------------------------------------------------------------------
 
@@ -106,7 +140,7 @@ IsInsideNotExact(
   det = vnl_det( M.GetVnlMatrix() ) * orientation;
   std::cout << "Det(M): " << det << std::endl;
 
-  return( det>=0?0:1 );
+  return( det<0?0:1 );
 }
 //------------------------------------------------------------------------------
 
@@ -123,6 +157,7 @@ IsInsideNotExact(
 // of the predicate that should not remain in the final itk version.
 // to be cleaned during the review process.
 //
+//
 template<
   typename MeshType, 
   typename MeshPointerType, 
@@ -136,6 +171,7 @@ TestPointInTriangleInMesh(
   bool ExactTest
   )
 {
+
   typedef typename MeshType::CellType   CellType; // abstract
   typedef typename CellType::CellAutoPointer CellAutoPointer; // abstract
 
@@ -151,8 +187,9 @@ TestPointInTriangleInMesh(
   CellAutoPointer cellIterator;
   if( myMesh->GetCell( TriangleId, cellIterator ) )
     {
-    if( cellIterator->GetType() == 2 )
-      { 
+		// NOTE STEPH: need to check if the cell type are triangles and nothing else
+    if( cellIterator->GetType() == 4 )
+      {
       // we have a triangle, let s get the points
       PointIdIterator pointIdIterator = cellIterator->PointIdsBegin();
       // NOTE ALEX: should check the return value
@@ -187,4 +224,7 @@ TestPointInTriangleInMesh(
    }
 }
 //------------------------------------------------------------------------------
+
+#endif // __itkPointInCircleGeometricalPredicateFunctor_h__
+
 
