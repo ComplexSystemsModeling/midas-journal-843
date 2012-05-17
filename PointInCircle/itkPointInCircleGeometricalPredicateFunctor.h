@@ -184,6 +184,8 @@ TestPointInTriangleInMesh(
 
   PointType mpa, mpb, mpc;
 
+  // STEF: TODELETE - Testing modification
+
   CellAutoPointer cellIterator;
   if( myMesh->GetCell( TriangleId, cellIterator ) )
     {
